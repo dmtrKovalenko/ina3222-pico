@@ -8,20 +8,6 @@
 #define SERIAL_SPEED 115200 // serial baud rate
 #define PRINT_DEC_POINTS 3  // decimal points to print
 
-// Set I2C address to 0x41 (A0 pin -> VCC)
-INA3221 ina_0(INA3221_ADDR40_GND);
-INA3221 ina_1(INA3221_ADDR41_VCC);
-
-void current_measure_init() {
-  ina_0.begin(&Wire);
-  ina_0.reset();
-  ina_0.setShuntRes(10, 10, 10);
-
-  ina_1.begin(&Wire);
-  ina_1.reset();
-  ina_1.setShuntRes(10, 10, 10);
-}
-
 // pin definition for the 1.8", 128x160 ST7735 LCD Display on Raspberry Pico
 // These can be connected to any GP Pin not in use
 #define TFT_CS 9
@@ -40,9 +26,24 @@ void current_measure_init() {
 #define CLOCK_SYNC_INTERVAL 10 // 24 * 60
 #define SLEEP_INTERVAL 120
 
+// Set I2C address to 0x41 (A0 pin -> VCC)
+INA3221 ina_0(INA3221_ADDR40_GND);
+// Just an example showing that you can add multiple INA3221 devices
+INA3221 ina_1(INA3221_ADDR41_VCC);
+
 // Setup the ST7735 LCD Display and variables
 Adafruit_ST7735 tft =
     Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCK, TFT_RST);
+
+void current_measure_init() {
+  ina_0.begin(&Wire);
+  ina_0.reset();
+  ina_0.setShuntRes(10, 10, 10);
+
+  ina_1.begin(&Wire);
+  ina_1.reset();
+  ina_1.setShuntRes(10, 10, 10);
+}
 
 void setup() {
   Wire.begin();
@@ -51,10 +52,9 @@ void setup() {
 
   // Set shunt resistors to 10 mOhm for all channels
   // put your setup code here, to run once:
-  tft.initR(INITR_GREENTAB);    // initialize a ST7735S chip, black tab
+  tft.initR(INITR_GREENTAB);    // initialize a ST7735S chip, green tab
   tft.fillScreen(ST7735_BLACK); // Fill the screen with Black
   tft.setTextSize(1);           // Set the initial text size to 1
-  //
 }
 
 int channel_number(ina3221_ch_t channel) {
