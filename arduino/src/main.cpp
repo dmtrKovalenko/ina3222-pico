@@ -77,14 +77,16 @@ int channel_number(ina3221_ch_t channel) {
 void render_channel(int y_offset, ina3221_ch_t channel) {
   float voltage = min_zero(ina_0.getVoltage(channel));
   float current = min_zero(ina_0.getCurrent(channel));
+  String channel_name = String(channel_number(channel));
 
-  Serial.println(String(voltage) + "V " + String(current) + "mA");
+  Serial.println("Channel " + channel_name + ": " + (voltage) + "V " +
+                 String(current) + "mA");
 
   tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
   tft.setTextSize(1);
 
   tft.setCursor(TEXT_X_OFFSET, y_offset);
-  tft.print("Channel " + String(channel_number(channel)) + ": ");
+  tft.print("Channel " + channel_name + ": ");
 
   tft.setCursor(TEXT_X_OFFSET, y_offset + LINE_SIZE);
   tft.print(String(voltage) + "V " + String(current, 2) + "mA");
